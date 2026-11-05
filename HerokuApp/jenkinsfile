@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-     environment {
+    environment {
         bs_username = credentials('bs_username')
         bs_token    = credentials('bs_token')
     }
@@ -15,15 +15,18 @@ pipeline {
 
         stage('Execute BrowserStack Tests') {
             steps {
-
-                bat '"C:\\Program Files\\apache-maven-3.9.16\\bin\\mvn.cmd" clean test -DsuiteXmlFile=testng.xml'
+                dir('HerokuApp') {
+                    bat '"C:\\Program Files\\apache-maven-3.9.16\\bin\\mvn.cmd" clean test -DsuiteXmlFile=testng.xml'
+                }
             }
         }
     }
 
     post {
-        always {
-            junit '**/target/surefire-reports/*.xml'
+        always {         
+            dir('HerokuApp') {
+                junit '**/target/surefire-reports/*.xml'
+            }
         }
     }
 }
