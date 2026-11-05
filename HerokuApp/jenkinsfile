@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+
+    environment {
+        BROWSERSTACK_USERNAME   = credentials('bs_username')
+        BROWSERSTACK_ACCESS_KEY = credentials('bs_token')
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Execute BrowserStack Tests') {
+            steps {
+
+                bat '"C:\\Program Files\\apache-maven-3.9.16\\bin\\mvn.cmd" clean test -DsuiteXmlFile=testng.xml'
+            }
+        }
+    }
+
+    post {
+        always {
+            junit '**/target/surefire-reports/*.xml'
+        }
+    }
+}
